@@ -1,25 +1,31 @@
-import { Avatar } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
 import './SidebarChat.css';
-import db from './firebase';
+
+import React, { useEffect, useState } from 'react';
+
+import { Avatar } from '@material-ui/core';
 import { Link } from 'react-router-dom';
+import db from './firebase';
 import { useStateValue } from './StateProvider';
-import axios from './axios';
 
 function SidebarChat({ id, name, addNewChat }) {
+  const { messages } = useStateValue();
   const [seed, setSeed] = useState(25);
-  const [messages, setMessages] = useState([]);
-  const [{ user, roomkey }, dispatch] = useStateValue();
+  //const [messages, setMessages] = useState([]);
+  //const [{ user, roomkey }, dispatch] = useStateValue();
 
-  useEffect(() => {
-    if (roomkey) {
-      axios.get(`api/messages/findByID/${roomkey}`).then((response) => {
-        setMessages(response.data);
-        console.log('inside side', response.data);
-      });
-    }
-  }, [roomkey]);
+  // useEffect(() => {
+  //   const abortController = new AbortController();
+  //   if (roomkey) {
+  //     axios.get(`api/messages/findByID/${roomkey}`).then((response) => {
+  //       setMessages(response.data);
+  //     });
+  //   }
+  //   return () => {
+  //     abortController.abort();
+  //   };
+  // }, [roomkey]);
 
+  console.log('5 inside sidebarchat');
   useEffect(() => {
     setSeed(Math.floor(Math.random() * 5000));
   }, []);
@@ -40,6 +46,7 @@ function SidebarChat({ id, name, addNewChat }) {
         <div className="sidebarChat__info">
           <h2>{name}</h2>
           <p>{messages[messages.length - 1]?.message}</p>
+          {/* <p>thanks</p> */}
         </div>
       </div>
     </Link>

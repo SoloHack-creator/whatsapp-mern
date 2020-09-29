@@ -10,14 +10,15 @@ import db from './firebase';
 import { useStateValue } from './StateProvider';
 import { actionTypes } from './reducer';
 
-function Chat({ messages }) {
+function Chat({ messages, dispaly }) {
   const { roomID } = useParams();
   const [input, setInput] = useState('');
   const [roomName, setRoomName] = useState('');
-
-  let [{ roomkey }, dispatch] = useStateValue();
+  const { state, dispatch, setMessages } = useStateValue();
+  //let [{ roomkey, user }, dispatch] = useStateValue();
 
   useEffect(() => {
+    const abortController = new AbortController();
     if (roomID) {
       db.collection('rooms')
         .doc(roomID)
@@ -28,8 +29,15 @@ function Chat({ messages }) {
             roomkey: roomID,
           });
         });
-      // console.log('Message', re);
+      axios
+        .get(`api/messages/findByID/${state.roomkey}`, {
+          signal: abortController.signal,
+        })
+        .then((response) => setMessages(response.data));
     }
+    return () => {
+      abortController.abort();
+    };
   }, [roomID]);
 
   const sendMessage = async (e) => {
@@ -37,14 +45,14 @@ function Chat({ messages }) {
 
     await axios.post('/api/messages/new', {
       message: input,
-      name: 'AdminUser',
+      name: state.user.displayName,
       timestamp: new Date().toLocaleString('en-IN'),
       received: true,
       roomID: roomID,
     });
     setInput('');
   };
-
+  console.log('2inside chat', { dispaly });
   const url = 'https://avatars.dicebear.com/api/human/22/45454.svg';
   return (
     <div className="chat">

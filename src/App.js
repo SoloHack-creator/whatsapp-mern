@@ -7,26 +7,33 @@ import axios from './axios';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Login from './Login';
 import { useStateValue } from './StateProvider';
+import reducer, { initialState } from './reducer';
 function App() {
-  const [messages, setMessages] = useState([]);
+  // const [messages, setMessages] = useState([]);
 
-  const [{ user, roomkey }, dispatch] = useStateValue();
+  // useEffect(() => {
+  //   axios
+  //     .get('api/messages/sync')
+  //     .then((response) => setMessages(response.data));
+  // }, []);
+  const { messages, setMessages, state, dispatch } = useStateValue();
 
-  useEffect(() => {
-    axios
-      .get('api/messages/sync')
-      .then((response) => setMessages(response.data));
-  }, []);
+  // useEffect(() => {
+  //   const abortController = new AbortController();
+  //   if (state.roomkey) {
+  //     axios
+  //       .get(`api/messages/findByID/${state.roomkey}`, {
+  //         signal: abortController.signal,
+  //       })
+  //       .then((response) => setMessages(response.data));
+  //   }
 
-  useEffect(() => {
-    if (roomkey) {
-      axios
-        .get(`api/messages/findByID/${roomkey}`)
-        .then((response) => setMessages(response.data));
-    }
-  }, [roomkey]);
+  //   return () => {
+  //     abortController.abort();
+  //   };
+  // }, [state.roomkey]);
 
-  console.log(messages);
+  console.log('1inside app');
   //to connect with pusher which connects with mongooseDB
   useEffect(() => {
     const pusher = new Pusher('f19bef233c85ab4f93b9', {
@@ -45,11 +52,11 @@ function App() {
     };
   }, [messages]);
 
-  // console.log('initial', messages);
+  console.log('initial user', state.user);
 
   return (
     <div className="app">
-      {!user ? (
+      {!state.user ? (
         <Login />
       ) : (
         <div className="app__body">
@@ -57,10 +64,10 @@ function App() {
             <Sidebar />
             <Switch>
               <Route path="/rooms/:roomID">
-                <Chat messages={messages} />
+                <Chat messages={messages} dispaly={state.user} />
               </Route>
               <Route path="/">
-                <Chat messages={messages} />
+                <Chat messages={messages} dispaly={state.user} />
               </Route>
             </Switch>
           </Router>

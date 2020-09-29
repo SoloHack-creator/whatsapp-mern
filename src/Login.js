@@ -7,7 +7,8 @@ import { actionTypes } from './reducer';
 
 function Login() {
   //{}-state/{user}
-  const [{}, dispatch] = useStateValue();
+  //const [{}, dispatch] = useStateValue();
+  const { dispatch } = useStateValue();
 
   const signIn = () => {
     auth
@@ -20,7 +21,7 @@ function Login() {
       )
       .catch((error) => alert(error.message));
   };
-
+  //console.log('userdetails', user);
   const signInFacebook = () => {
     auth
       .signInWithPopup(providerFacebook)
@@ -32,6 +33,7 @@ function Login() {
       )
       .catch((error) => alert(error.message));
   };
+  // console.log('userdetails', user);
 
   return (
     <div className="login">
